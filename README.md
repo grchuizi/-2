@@ -6,6 +6,7 @@
 > - **换关键词 / 换行业？** → [`如何换关键词.md`](如何换关键词.md)
 > - **换电脑 / 重新安装？** → [`换电脑安装指南.md`](换电脑安装指南.md)
 > - **配置你自己的 API Key？** → [`换电脑安装指南.md`](换电脑安装指南.md)「配 API Key」（仓库不含任何作者密钥，用自己的）
+> - **Fork 后用不了 / 看不到 Run workflow？** → [`换电脑安装指南.md`](换电脑安装指南.md)「场景二：fork 一份」（fork 后要先启用 Actions，再配你自己的 Secret）
 
 ## 1. 项目名称
 
@@ -107,7 +108,27 @@ py -3.11 -m venv .venv
 3. **手动触发一次**：Actions → `Manual Run` → Run workflow，输入任务 id（默认 `charging_cn_weekly`）。
 4. **验收标准**：无本地电脑参与完成一次全流程（采集 → 分析 → 审查 → 报告），并在微信收到摘要推送。
 
-### 10.3 工作流
+### 10.3 Fork 后启用 Actions（别人 Clone 用不了？先看这里）
+
+**如果你是从别人的仓库 fork 过来的**：fork 后 GitHub 会**默认禁用 Actions**（安全策略，fork 视为不信任代码）。所以你会看到：
+
+- Actions 标签页里所有 workflow 是**灰色/禁用**状态，或者干脆看不到 `Manual Run`、`Run workflow` 按钮不出现。
+- **这不是仓库/代码有问题，是 fork 默认冻结了 Actions**，需要手动解冻。
+
+**两步启用（在你 fork 的那个仓库里操作，不是原作者仓库）：**
+
+1. **Allow Actions**：`Settings → Actions → General → Actions permissions` → 选 **"Allow all actions and reusable workflows"**（默认常常是 Disable / Allow select）。
+2. **给读写权限**：同一页的 **Workflow permissions** → 选 **"Read and write permissions"**（本仓库 workflow 要 `contents: write` 来自动提交数据）。
+3. **启用 workflow**：回到 `Actions` 页签 → 左列找到 `manual_run.yml` → 点进去 → 右上角 **"Enable workflow"** 按钮 → 点一下。
+
+完成后 `Actions → Manual Run → Run workflow` 的按钮就会出现。
+
+> ⚠️ **Secret 配在哪？** 配在**你 fork 的那个仓库**（Settings → Secrets and variables → Actions）。GitHub **故意不复制**原仓库的 Secret 到 fork，所以原作者的两个 key 不会、也不该出现在你的 fork 里——**你要用自己的**：
+> - `DEEPSEEK_API_KEY` — 你自己的 DeepSeek API Key
+> - `SERVERCHAN_KEY` — 你自己的 Server酱 SendKey
+> - 注意变量名是 **`SERVERCHAN_KEY`**（不是 `.env.example` 里旧的 `SERVERCHAN_SENDKEY`），配错会导致推送静默失败。
+
+### 10.4 工作流
 
 | 工作流 | 触发 | 作用 |
 |--------|------|------|
@@ -118,7 +139,7 @@ py -3.11 -m venv .venv
 
 所有运行共享同一并发组，避免同一天多次写同一 SQLite；失败任务自动重试一次并推送微信告警。
 
-### 10.4 持久化数据
+### 10.5 持久化数据
 
 - `data/state/industry_intelligence.sqlite` — 跨运行积累的查询层（历史比较的事实源），随运行提交回仓库。
 - `data/collection.jsonl` — 规范化文档审计层（追加式）。
