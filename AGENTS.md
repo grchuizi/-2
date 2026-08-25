@@ -8,7 +8,7 @@
 首主题「充电与户用储能」，通过 `config/topics/*.yaml` 换行业，核心代码行业无关。
 
 ## 2. 一键本地部署（优先读这个）
-按 [`docs/10_DEPLOY_FOR_AI.md`](docs/10_DEPLOY_FOR_AI.md) 第 2~5 步执行。要点：
+按 [`docs/10_DEPLOY_FOR_AI.md`](docs/10_DEPLOY_FOR_AI.md) 的**方式 A**（AI 代理一键部署）执行。要点：
 
 ```bash
 # 建隔离 .venv + 装依赖（只装到 .venv，绝不全局 pip install）
@@ -19,7 +19,7 @@ powershell -ExecutionPolicy Bypass -File scripts/01_Create-Isolated-Venv.ps1
 .venv/Scripts/python main.py --version
 .venv/Scripts/python main.py --validate
 
-# 跑完整链路（需两个 key 通过环境变量注入，见 docs/10 第 3 步）
+# 跑完整链路（需两个 key 通过环境变量注入，见 docs/10 方式 B 的「第 2 步 配 key」）
 .venv/Scripts/python main.py --topic charging_pile --task charging_cn_weekly --phase2 --phase3 --phase4 --notify true
 ```
 
